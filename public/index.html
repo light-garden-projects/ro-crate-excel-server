@@ -115,6 +115,48 @@
       a {
         color: var(--accent);
       }
+      .tryit {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1.25rem;
+        margin: 1.5rem 0 2.5rem;
+      }
+      .tryit form {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .tryit button {
+        background: var(--accent);
+        color: #fff;
+        border: 0;
+        border-radius: 6px;
+        padding: 0.5rem 1rem;
+        font-size: 0.95rem;
+        cursor: pointer;
+      }
+      .tryit button:disabled {
+        opacity: 0.6;
+        cursor: default;
+      }
+      .status {
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+      .status.error {
+        color: #d14343;
+      }
+      #result pre {
+        max-height: 420px;
+        overflow: auto;
+      }
+      #download {
+        display: inline-block;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+      }
     </style>
   </head>
   <body>
@@ -125,6 +167,20 @@
         <a href="https://www.researchobject.org/ro-crate/">RO-Crate</a> JSON-LD using
         <a href="https://www.npmjs.com/package/ro-crate-excel">ro-crate-excel</a>.
       </p>
+
+      <section class="tryit">
+        <h2>Try it</h2>
+        <p>Upload an <code>.xlsx</code> workbook and convert it right here in your browser.</p>
+        <form id="convert-form">
+          <input type="file" id="file-input" name="file" accept=".xlsx" required />
+          <button type="submit" id="convert-btn">Convert</button>
+        </form>
+        <p id="status" class="status" hidden></p>
+        <div id="result" hidden>
+          <a id="download" download="ro-crate-metadata.json">Download .json</a>
+          <pre><code id="output"></code></pre>
+        </div>
+      </section>
 
       <h2><span class="method">POST</span><span class="endpoint">/convert</span></h2>
       <p>
@@ -179,5 +235,52 @@
         Licensed under GPL-3.0. Only one workbook per request is supported at the moment.
       </footer>
     </main>
+
+    <script>
+      const form = document.getElementById("convert-form");
+      const fileInput = document.getElementById("file-input");
+      const btn = document.getElementById("convert-btn");
+      const statusEl = document.getElementById("status");
+      const result = document.getElementById("result");
+      const output = document.getElementById("output");
+      const download = document.getElementById("download");
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        btn.disabled = true;
+        result.hidden = true;
+        statusEl.hidden = false;
+        statusEl.className = "status";
+        statusEl.textContent = "Converting\u2026";
+
+        const body = new FormData();
+        body.append("file", file);
+
+        try {
+          const res = await fetch("/convert", { method: "POST", body });
+          const text = await res.text();
+          if (!res.ok) {
+            statusEl.className = "status error";
+            statusEl.textContent = `Error ${res.status}: ${text}`;
+            return;
+          }
+          const json = JSON.stringify(JSON.parse(text), null, 2);
+          statusEl.hidden = true;
+          output.textContent = json;
+          download.href = URL.createObjectURL(
+            new Blob([json], { type: "application/ld+json" })
+          );
+          result.hidden = false;
+        } catch (err) {
+          statusEl.className = "status error";
+          statusEl.textContent = `Request failed: ${err.message}`;
+        } finally {
+          btn.disabled = false;
+        }
+      });
+    </script>
   </body>
 </html>
