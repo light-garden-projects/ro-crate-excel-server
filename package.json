@@ -1,0 +1,29 @@
+{
+  "name": "ro-crate-excel-server",
+  "version": "0.1.0",
+  "description": "Microservice that converts Excel files to RO-Crate JSON-LD via ro-crate-excel",
+  "license": "GPL-3.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "tsx watch src/server.ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@fastify/multipart": "^10.1.1",
+    "fastify": "^5.12.3",
+    "ro-crate": "^3.7.2",
+    "ro-crate-excel": "^1.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.5.0",
+    "form-data": "^4.0.6",
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.0"
+  }
+}

@@ -1,0 +1,10 @@
+// Minimal ambient types for the untyped CommonJS `ro-crate-excel` library.
+declare module "ro-crate-excel" {
+  export class Workbook {
+    constructor(options?: { crate?: unknown });
+    crate: { getJson(): unknown };
+    workbook: { xlsx: { writeFile(path: string): Promise<void> } };
+    loadExcel(filePath: string, add?: boolean): Promise<void>;
+    crateToWorkbook(): Promise<void>;
+  }
+}
