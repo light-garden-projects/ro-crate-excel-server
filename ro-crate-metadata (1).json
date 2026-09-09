@@ -1,0 +1,206 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.2/context",
+    {
+      "@vocab": "http://schema.org/"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "identifier": "ro-crate-metadata.json",
+      "about": {
+        "@id": "./"
+      },
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.2"
+      }
+    },
+    {
+      "@id": "#RepositoryObject_20260604BkwworkshopJillNganjmirraLowres",
+      "@type": "RepositoryObject",
+      "name": "20260604_BkwWorkshop_Jill Nganjmirra_LowRes",
+      "description": "BKRLCC strategic workshop promotional videos. These videos were shot at the Museum and Art Gallery of the Northern Territory, Darwin.",
+      "dateCreated": "2026-06-04",
+      "dateAdded": "2026-06-16",
+      "enteredBy": {
+        "@id": "#Person_salomeNabarlambarl_579"
+      },
+      "isPublishable": "FALSE",
+      "depiction": "Depictions/20260604_BkwWorkshop_Jill Nganjmirra.png",
+      "contentLocation": {
+        "@id": "#Place_magntMuseumDarwin_216"
+      },
+      "inLanguage": {
+        "@id": "#Language_kunwinjku_390"
+      },
+      "creator": {
+        "@id": "#Person_claudiaCialone_528"
+      },
+      "contributor": {
+        "@id": "#Person_salomeNabarlambarl_579, #Person_jillNganjmirra_574"
+      },
+      "hasPart": {
+        "@id": "20260604_BkwWorkshop_Jill Nganjmirra_LowRes.mov"
+      },
+      "mentions": {
+        "@id": "#Person_jillNganjmirra_574, #Person_murrayGarde_426"
+      }
+    },
+    {
+      "@id": "#RepositoryObject_20260604BkwworkshopJennyManmuruluLowres",
+      "@type": "RepositoryObject",
+      "name": "20260604_BkwWorkshop_Jenny Manmurulu_LowRes",
+      "description": "BKRLCC strategic workshop promotional videos. These videos were shot at the Museum and Art Gallery of the Northern Territory, Darwin.",
+      "dateCreated": "2026-06-04",
+      "dateAdded": "2026-06-16",
+      "enteredBy": {
+        "@id": "#Person_salomeNabarlambarl_579"
+      },
+      "isPublishable": "FALSE",
+      "contentLocation": {
+        "@id": "#Place_magntMuseumDarwin_216"
+      },
+      "inLanguage": {
+        "@id": "#Language_kunwinjku_390"
+      },
+      "creator": {
+        "@id": "#Person_claudiaCialone_528"
+      },
+      "contributor": {
+        "@id": "#Person_salomeNabarlambarl_579, #Person_jillNganjmirra_574"
+      },
+      "hasPart": {
+        "@id": "20260604_BkwWorkshop_Jenny Manmurulu_LowRes.mov"
+      },
+      "mentions": {
+        "@id": "#Person_jennyManmurulu_410"
+      }
+    },
+    {
+      "@id": "#RepositoryObject_20260604BkwworkshopMurrayGardeLowres",
+      "@type": "RepositoryObject",
+      "name": "20260604_BkwWorkshop_Murray Garde_LowRes",
+      "description": "BKRLCC strategic workshop promotional videos. These videos were shot at the Museum and Art Gallery of the Northern Territory, Darwin.",
+      "dateCreated": "2026-06-04",
+      "dateAdded": "2026-06-16",
+      "enteredBy": {
+        "@id": "#Person_salomeNabarlambarl_579"
+      },
+      "isPublishable": "FALSE",
+      "contentLocation": {
+        "@id": "#Place_magntMuseumDarwin_216"
+      },
+      "inLanguage": {
+        "@id": "#Language_kunwinjku_390"
+      },
+      "creator": {
+        "@id": "#Person_claudiaCialone_528"
+      },
+      "contributor": {
+        "@id": "#Person_salomeNabarlambarl_579, #Person_jillNganjmirra_574"
+      },
+      "hasPart": {
+        "@id": "20260604_BkwWorkshop_Murray Garde_LowRes.mov"
+      },
+      "mentions": {
+        "@id": "#Person_jillNganjmirra_574, #Person_murrayGarde_426"
+      }
+    },
+    {
+      "@id": "#RepositoryObject_20260605BkwworkshopJeanetteBurrunaliLowres",
+      "@type": "RepositoryObject",
+      "name": "20260605_BkwWorkshop_Jeanette Burrunali_LowRes",
+      "description": "bkrlcc strategic workshop promotional videos were shot at the magnt museum",
+      "dateCreated": "2026-06-05",
+      "dateAdded": "2026-06-16",
+      "enteredBy": {
+        "@id": "#Person_salomeNabarlambarl_579"
+      },
+      "isPublishable": "FALSE",
+      "contentLocation": {
+        "@id": "#Place_magntMuseumDarwin_216"
+      },
+      "inLanguage": {
+        "@id": "#Language_kunwinjku_390"
+      },
+      "creator": {
+        "@id": "#Person_claudiaCialone_528"
+      },
+      "hasPart": {
+        "@id": "20260605_BkwWorkshop_Jeanette Burrunali_LowRes.mov"
+      },
+      "mentions": {
+        "@id": "#Person_jeanetteBurrunali_102"
+      }
+    },
+    {
+      "@id": "#RepositoryObject_20260605BkwworkshopKayeNamundjaLowres",
+      "@type": "RepositoryObject",
+      "name": "20260605_BkwWorkshop_Kaye Namundja_LowRes",
+      "description": "bkrlcc strategic workshop promotional videos were shot at the magnt museum",
+      "dateCreated": "2026-06-05",
+      "dateAdded": "2026-06-16",
+      "enteredBy": {
+        "@id": "#Person_salomeNabarlambarl_579"
+      },
+      "isPublishable": "FALSE",
+      "contentLocation": {
+        "@id": "#Place_magntMuseumDarwin_216"
+      },
+      "inLanguage": {
+        "@id": "#Language_kunwinjku_390"
+      },
+      "creator": {
+        "@id": "#Person_claudiaCialone_528"
+      },
+      "hasPart": {
+        "@id": "20260605_BkwWorkshop_Kaye Namundja_LowRes.mov"
+      },
+      "mentions": {
+        "@id": "#Person_kayeNamundja_304"
+      }
+    },
+    {
+      "@id": "#RepositoryObject_20260605BkwworkshopSalomeNabarlambarlLowres",
+      "@type": "RepositoryObject",
+      "name": "20260605_BkwWorkshop_Salome Nabarlambarl_LowRes",
+      "description": "bkrlcc strategic workshop promotional videos were shot at the magnt museum!",
+      "dateCreated": "2026-06-05",
+      "dateAdded": "2026-06-16",
+      "enteredBy": {
+        "@id": "#Person_salomeNabarlambarl_579"
+      },
+      "isPublishable": "FALSE",
+      "contentLocation": {
+        "@id": "#Place_magntMuseumDarwin_216"
+      },
+      "inLanguage": {
+        "@id": "#Language_kunwinjku_390"
+      },
+      "creator": {
+        "@id": "#Person_claudiaCialone_528"
+      },
+      "hasPart": {
+        "@id": "20260605_BkwWorkshop_Salome Nabarlambarl_LowRes.mov"
+      }
+    },
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset",
+        "RepositoryCollection"
+      ],
+      "name": "BKRLCC PROMOTIONAL VIDEOS",
+      "description": "TEST",
+      "identifier": "",
+      "isRef_license": "",
+      "isRef_author": "",
+      "isRef_publisher": "",
+      "datePublished": "2026-07-14",
+      "isRef_inLanguage": "",
+      "isRef_ldac:subjectLanguage": ""
+    }
+  ]
+}

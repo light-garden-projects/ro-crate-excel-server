@@ -168,6 +168,70 @@
         margin-bottom: 0.5rem;
         font-size: 0.9rem;
       }
+      .tryit textarea {
+        font: inherit;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        width: 100%;
+        min-height: 160px;
+        padding: 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: var(--bg);
+        color: var(--fg);
+        resize: vertical;
+      }
+      .tryit .controls {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-top: 0.75rem;
+      }
+      .banner {
+        font-weight: 600;
+        border-radius: 6px;
+        padding: 0.5rem 0.75rem;
+        margin: 0 0 0.75rem;
+      }
+      .banner.valid {
+        background: rgba(45, 160, 90, 0.15);
+        color: #1f8b4c;
+      }
+      .banner.invalid {
+        background: rgba(209, 67, 67, 0.15);
+        color: #d14343;
+      }
+      .results {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 0.4rem;
+      }
+      .result-item {
+        border-left: 3px solid var(--border);
+        padding: 0.4rem 0.6rem;
+        border-radius: 0 4px 4px 0;
+        background: var(--card);
+        font-size: 0.9rem;
+      }
+      .result-item.error {
+        border-left-color: #d14343;
+      }
+      .result-item.warning {
+        border-left-color: #d4901f;
+      }
+      .result-item.success {
+        border-left-color: #1f8b4c;
+        opacity: 0.7;
+      }
+      .result-item .result-status {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        letter-spacing: 0.04em;
+        margin-right: 0.4rem;
+      }
     </style>
   </head>
   <body>
@@ -201,6 +265,34 @@
         <div id="result" hidden>
           <a id="download" download="ro-crate-metadata.json">Download .json</a>
           <pre><code id="output"></code></pre>
+        </div>
+      </section>
+
+      <section class="tryit">
+        <h2>Validate a crate</h2>
+        <p>
+          Paste RO-Crate JSON-LD below, or load a <code>.json</code> /
+          <code>.jsonld</code> file, then check it against the RO-Crate
+          specification.
+        </p>
+        <form id="validate-form">
+          <textarea
+            id="validate-input"
+            placeholder='{ "@context": "...", "@graph": [ ... ] }'
+          ></textarea>
+          <div class="controls">
+            <input
+              type="file"
+              id="validate-file"
+              accept=".json,.jsonld,application/json,application/ld+json"
+            />
+            <button type="submit" id="validate-btn">Validate</button>
+          </div>
+        </form>
+        <p id="validate-status" class="status" hidden></p>
+        <div id="validate-results" hidden>
+          <p id="validate-banner" class="banner"></p>
+          <ul id="validate-list" class="results"></ul>
         </div>
       </section>
 
@@ -256,6 +348,33 @@
       </table>
 
       <h2>
+        <span class="method">POST</span><span class="endpoint">/validate</span>
+      </h2>
+      <p>
+        Validate an RO-Crate JSON-LD document against the RO-Crate
+        specification. Send the crate as the request body with a
+        <code>Content-Type</code> of <code>application/json</code> or
+        <code>application/ld+json</code>.
+      </p>
+
+      <h3>Example</h3>
+      <pre><code>curl -X POST \
+  -H "Content-Type: application/ld+json" \
+  --data-binary @ro-crate-metadata.json \
+  https://ro-crate-excel-api.light.garden/validate</code></pre>
+
+      <h3>Response</h3>
+      <p>
+        <code>200</code> with a JSON body
+        <code>{ "valid": boolean, "results": [ ... ] }</code>. Each result has
+        an <code>id</code>, a <code>status</code> of <code>success</code>,
+        <code>warning</code>, or <code>error</code>, a <code>message</code>, and
+        a spec <code>clause</code>. <code>valid</code> is
+        <code>false</code> when any result is an <code>error</code>. A body that
+        is missing or not a JSON object returns <code>400</code>.
+      </p>
+
+      <h2>
         <span class="method">GET</span><span class="endpoint">/health</span>
       </h2>
       <p>Liveness check. Returns <code>{ "status": "ok" }</code>.</p>
@@ -309,6 +428,79 @@
           statusEl.textContent = `Request failed: ${err.message}`;
         } finally {
           btn.disabled = false;
+        }
+      });
+
+      const validateForm = document.getElementById("validate-form");
+      const validateInput = document.getElementById("validate-input");
+      const validateFile = document.getElementById("validate-file");
+      const validateBtn = document.getElementById("validate-btn");
+      const validateStatus = document.getElementById("validate-status");
+      const validateResults = document.getElementById("validate-results");
+      const validateBanner = document.getElementById("validate-banner");
+      const validateList = document.getElementById("validate-list");
+
+      validateFile.addEventListener("change", async () => {
+        const file = validateFile.files[0];
+        if (file) validateInput.value = await file.text();
+      });
+
+      validateForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const text = validateInput.value.trim();
+        if (!text) return;
+
+        try {
+          JSON.parse(text);
+        } catch (err) {
+          validateResults.hidden = true;
+          validateStatus.hidden = false;
+          validateStatus.className = "status error";
+          validateStatus.textContent = `Not valid JSON: ${err.message}`;
+          return;
+        }
+
+        validateBtn.disabled = true;
+        validateResults.hidden = true;
+        validateStatus.hidden = false;
+        validateStatus.className = "status";
+        validateStatus.textContent = "Validating\u2026";
+
+        try {
+          const res = await fetch("/validate", {
+            method: "POST",
+            headers: { "Content-Type": "application/ld+json" },
+            body: text,
+          });
+          const report = await res.json();
+          if (!res.ok) {
+            validateStatus.className = "status error";
+            validateStatus.textContent = `Error ${res.status}: ${report.error ?? "validation failed"}`;
+            return;
+          }
+
+          validateStatus.hidden = true;
+          validateBanner.className = `banner ${report.valid ? "valid" : "invalid"}`;
+          validateBanner.textContent = report.valid
+            ? "Valid RO-Crate"
+            : "Not a valid RO-Crate";
+
+          validateList.textContent = "";
+          for (const item of report.results) {
+            const li = document.createElement("li");
+            li.className = `result-item ${item.status}`;
+            const status = document.createElement("span");
+            status.className = "result-status";
+            status.textContent = item.status;
+            li.append(status, document.createTextNode(item.message));
+            validateList.append(li);
+          }
+          validateResults.hidden = false;
+        } catch (err) {
+          validateStatus.className = "status error";
+          validateStatus.textContent = `Request failed: ${err.message}`;
+        } finally {
+          validateBtn.disabled = false;
         }
       });
     </script>

@@ -19,5 +19,6 @@ describe("GET /", () => {
     expect(response.headers["content-type"]).toContain("text/html");
     expect(response.body).toContain("RO-Crate Excel Server");
     expect(response.body).toContain('id="convert-form"');
+    expect(response.body).toContain('id="validate-input"');
   });
 });
