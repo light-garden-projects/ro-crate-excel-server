@@ -5,235 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>RO-Crate Excel Server</title>
     <link rel="icon" href="./favicon/favicon.ico" sizes="any" />
-    <style>
-      :root {
-        color-scheme: light dark;
-        --fg: #1a1a1a;
-        --muted: #5b6472;
-        --bg: #ffffff;
-        --card: #f5f6f8;
-        --border: #e2e5ea;
-        --accent: #2d6cdf;
-        --code: #0b3d91;
-      }
-      @media (prefers-color-scheme: dark) {
-        :root {
-          --fg: #e6e8eb;
-          --muted: #9aa4b2;
-          --bg: #14171c;
-          --card: #1c2027;
-          --border: #2a2f38;
-          --accent: #6ea0ff;
-          --code: #9ec1ff;
-        }
-      }
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        padding: 2.5rem 1.25rem 4rem;
-        font-family:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-          Arial, sans-serif;
-        line-height: 1.6;
-        color: var(--fg);
-        background: var(--bg);
-      }
-      input {
-        font-family:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-          Arial, sans-serif;
-      }
-      main {
-        max-width: 760px;
-        margin: 0 auto;
-      }
-      h1 {
-        font-size: 1.9rem;
-        margin: 0 0 0.25rem;
-      }
-      .lead {
-        color: var(--muted);
-        margin: 0 0 2rem;
-        font-size: 1.05rem;
-      }
-      h2 {
-        font-size: 1.25rem;
-        margin: 2.25rem 0 0.5rem;
-      }
-      code {
-        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-        color: var(--code);
-        background: var(--card);
-        padding: 0.1rem 0.35rem;
-        border-radius: 4px;
-        font-size: 0.9em;
-      }
-      pre {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 1rem;
-        overflow-x: auto;
-      }
-      pre code {
-        background: none;
-        padding: 0;
-        color: inherit;
-      }
-      table {
-        border-collapse: collapse;
-        width: 100%;
-        margin: 0.5rem 0;
-      }
-      th,
-      td {
-        text-align: left;
-        padding: 0.5rem 0.75rem;
-        border-bottom: 1px solid var(--border);
-        vertical-align: top;
-      }
-      th {
-        color: var(--muted);
-        font-weight: 600;
-        font-size: 0.9rem;
-      }
-      .endpoint {
-        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-        font-weight: 600;
-      }
-      .method {
-        display: inline-block;
-        background: var(--accent);
-        color: #fff;
-        border-radius: 4px;
-        padding: 0.05rem 0.5rem;
-        font-size: 0.8rem;
-        letter-spacing: 0.03em;
-        margin-right: 0.5rem;
-      }
-      footer {
-        margin-top: 3rem;
-        padding-top: 1.5rem;
-        border-top: 1px solid var(--border);
-        color: var(--muted);
-        font-size: 0.85rem;
-      }
-      a {
-        color: var(--accent);
-      }
-      .tryit {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 1.25rem;
-        margin: 1.5rem 0 2.5rem;
-      }
-      .tryit form {
-        display: flex;
-        gap: 0.75rem;
-        flex-wrap: wrap;
-        align-items: center;
-      }
-      .tryit input,
-      .tryit button {
-        font: inherit;
-      }
-      .tryit button {
-        background: var(--accent);
-        color: #fff;
-        border: 0;
-        border-radius: 6px;
-        padding: 0.5rem 1rem;
-        font-size: 0.95rem;
-        cursor: pointer;
-      }
-      .tryit button:disabled {
-        opacity: 0.6;
-        cursor: default;
-      }
-      .status {
-        font-size: 0.9rem;
-        color: var(--muted);
-      }
-      .status.error {
-        color: #d14343;
-      }
-      #result pre {
-        max-height: 420px;
-        overflow: auto;
-      }
-      #download {
-        display: inline-block;
-        margin-bottom: 0.5rem;
-        font-size: 0.9rem;
-      }
-      .tryit textarea {
-        font: inherit;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-        width: 100%;
-        min-height: 160px;
-        padding: 0.75rem;
-        border: 1px solid var(--border);
-        border-radius: 6px;
-        background: var(--bg);
-        color: var(--fg);
-        resize: vertical;
-      }
-      .tryit .controls {
-        display: flex;
-        gap: 0.75rem;
-        flex-wrap: wrap;
-        align-items: center;
-        margin-top: 0.75rem;
-      }
-      .banner {
-        font-weight: 600;
-        border-radius: 6px;
-        padding: 0.5rem 0.75rem;
-        margin: 0 0 0.75rem;
-      }
-      .banner.valid {
-        background: rgba(45, 160, 90, 0.15);
-        color: #1f8b4c;
-      }
-      .banner.invalid {
-        background: rgba(209, 67, 67, 0.15);
-        color: #d14343;
-      }
-      .results {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        display: grid;
-        gap: 0.4rem;
-      }
-      .result-item {
-        border-left: 3px solid var(--border);
-        padding: 0.4rem 0.6rem;
-        border-radius: 0 4px 4px 0;
-        background: var(--card);
-        font-size: 0.9rem;
-      }
-      .result-item.error {
-        border-left-color: #d14343;
-      }
-      .result-item.warning {
-        border-left-color: #d4901f;
-      }
-      .result-item.success {
-        border-left-color: #1f8b4c;
-        opacity: 0.7;
-      }
-      .result-item .result-status {
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.7rem;
-        letter-spacing: 0.04em;
-        margin-right: 0.4rem;
-      }
-    </style>
+    <link rel="stylesheet" href="./styles/styles.css" />
   </head>
   <body>
     <main>
@@ -245,57 +17,6 @@
         <a href="https://www.npmjs.com/package/ro-crate-excel">ro-crate-excel</a
         >.
       </p>
-
-      <section class="tryit">
-        <h2>Try it</h2>
-        <p>
-          Upload an <code>.xlsx</code> workbook and convert it right here in
-          your browser.
-        </p>
-        <form id="convert-form">
-          <input
-            type="file"
-            id="file-input"
-            name="file"
-            accept=".xlsx"
-            required
-          />
-          <button type="submit" id="convert-btn">Convert</button>
-        </form>
-        <p id="status" class="status" hidden></p>
-        <div id="result" hidden>
-          <a id="download" download="ro-crate-metadata.json">Download .json</a>
-          <pre><code id="output"></code></pre>
-        </div>
-      </section>
-
-      <section class="tryit">
-        <h2>Validate a crate</h2>
-        <p>
-          Paste RO-Crate JSON-LD below, or load a <code>.json</code> /
-          <code>.jsonld</code> file, then check it against the RO-Crate
-          specification.
-        </p>
-        <form id="validate-form">
-          <textarea
-            id="validate-input"
-            placeholder='{ "@context": "...", "@graph": [ ... ] }'
-          ></textarea>
-          <div class="controls">
-            <input
-              type="file"
-              id="validate-file"
-              accept=".json,.jsonld,application/json,application/ld+json"
-            />
-            <button type="submit" id="validate-btn">Validate</button>
-          </div>
-        </form>
-        <p id="validate-status" class="status" hidden></p>
-        <div id="validate-results" hidden>
-          <p id="validate-banner" class="banner"></p>
-          <ul id="validate-list" class="results"></ul>
-        </div>
-      </section>
 
       <h2>
         <span class="method">POST</span><span class="endpoint">/convert</span>
@@ -348,6 +69,29 @@
         </tr>
       </table>
 
+      <details class="tryit">
+        <summary>Try it</summary>
+        <p>
+          Upload an <code>.xlsx</code> workbook and convert it right here in
+          your browser.
+        </p>
+        <form id="convert-form">
+          <input
+            type="file"
+            id="file-input"
+            name="file"
+            accept=".xlsx"
+            required
+          />
+          <button type="submit" id="convert-btn">Convert</button>
+        </form>
+        <p id="status" class="status" hidden></p>
+        <div id="result" hidden>
+          <a id="download" download="ro-crate-metadata.json">Download .json</a>
+          <pre><code id="output"></code></pre>
+        </div>
+      </details>
+
       <h2>
         <span class="method">POST</span><span class="endpoint">/validate</span>
       </h2>
@@ -375,6 +119,34 @@
         is missing or not a JSON object returns <code>400</code>.
       </p>
 
+      <details class="tryit">
+        <summary>Try it</summary>
+        <p>
+          Paste RO-Crate JSON-LD below, or load a <code>.json</code> /
+          <code>.jsonld</code> file, then check it against the RO-Crate
+          specification.
+        </p>
+        <form id="validate-form">
+          <textarea
+            id="validate-input"
+            placeholder='{ "@context": "...", "@graph": [ ... ] }'
+          ></textarea>
+          <div class="controls">
+            <input
+              type="file"
+              id="validate-file"
+              accept=".json,.jsonld,application/json,application/ld+json"
+            />
+            <button type="submit" id="validate-btn">Validate</button>
+          </div>
+        </form>
+        <p id="validate-status" class="status" hidden></p>
+        <div id="validate-results" hidden>
+          <p id="validate-banner" class="banner"></p>
+          <ul id="validate-list" class="results"></ul>
+        </div>
+      </details>
+
       <h2>
         <span class="method">GET</span><span class="endpoint">/health</span>
       </h2>
@@ -386,124 +158,6 @@
       </footer>
     </main>
 
-    <script>
-      const form = document.getElementById("convert-form");
-      const fileInput = document.getElementById("file-input");
-      const btn = document.getElementById("convert-btn");
-      const statusEl = document.getElementById("status");
-      const result = document.getElementById("result");
-      const output = document.getElementById("output");
-      const download = document.getElementById("download");
-
-      form.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        const file = fileInput.files[0];
-        if (!file) return;
-
-        btn.disabled = true;
-        result.hidden = true;
-        statusEl.hidden = false;
-        statusEl.className = "status";
-        statusEl.textContent = "Converting\u2026";
-
-        const body = new FormData();
-        body.append("file", file);
-
-        try {
-          const res = await fetch("/convert", { method: "POST", body });
-          const text = await res.text();
-          if (!res.ok) {
-            statusEl.className = "status error";
-            statusEl.textContent = `Error ${res.status}: ${text}`;
-            return;
-          }
-          const json = JSON.stringify(JSON.parse(text), null, 2);
-          statusEl.hidden = true;
-          output.textContent = json;
-          download.href = URL.createObjectURL(
-            new Blob([json], { type: "application/ld+json" }),
-          );
-          result.hidden = false;
-        } catch (err) {
-          statusEl.className = "status error";
-          statusEl.textContent = `Request failed: ${err.message}`;
-        } finally {
-          btn.disabled = false;
-        }
-      });
-
-      const validateForm = document.getElementById("validate-form");
-      const validateInput = document.getElementById("validate-input");
-      const validateFile = document.getElementById("validate-file");
-      const validateBtn = document.getElementById("validate-btn");
-      const validateStatus = document.getElementById("validate-status");
-      const validateResults = document.getElementById("validate-results");
-      const validateBanner = document.getElementById("validate-banner");
-      const validateList = document.getElementById("validate-list");
-
-      validateFile.addEventListener("change", async () => {
-        const file = validateFile.files[0];
-        if (file) validateInput.value = await file.text();
-      });
-
-      validateForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        const text = validateInput.value.trim();
-        if (!text) return;
-
-        try {
-          JSON.parse(text);
-        } catch (err) {
-          validateResults.hidden = true;
-          validateStatus.hidden = false;
-          validateStatus.className = "status error";
-          validateStatus.textContent = `Not valid JSON: ${err.message}`;
-          return;
-        }
-
-        validateBtn.disabled = true;
-        validateResults.hidden = true;
-        validateStatus.hidden = false;
-        validateStatus.className = "status";
-        validateStatus.textContent = "Validating\u2026";
-
-        try {
-          const res = await fetch("/validate", {
-            method: "POST",
-            headers: { "Content-Type": "application/ld+json" },
-            body: text,
-          });
-          const report = await res.json();
-          if (!res.ok) {
-            validateStatus.className = "status error";
-            validateStatus.textContent = `Error ${res.status}: ${report.error ?? "validation failed"}`;
-            return;
-          }
-
-          validateStatus.hidden = true;
-          validateBanner.className = `banner ${report.valid ? "valid" : "invalid"}`;
-          validateBanner.textContent = report.valid
-            ? "Valid RO-Crate"
-            : "Not a valid RO-Crate";
-
-          validateList.textContent = "";
-          for (const item of report.results) {
-            const li = document.createElement("li");
-            li.className = `result-item ${item.status}`;
-            const status = document.createElement("span");
-            status.className = "result-status";
-            status.textContent = item.status;
-            li.append(status, document.createTextNode(item.message));
-            validateList.append(li);
-          }
-          validateResults.hidden = false;
-        } catch (err) {
-          validateStatus.className = "status error";
-          validateStatus.textContent = `Request failed: ${err.message}`;
-        } finally {
-          validateBtn.disabled = false;
-        }
-      });
-    </script>
+    <script src="./scripts/footer-script.js"></script>
   </body>
 </html>
