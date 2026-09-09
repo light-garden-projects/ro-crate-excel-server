@@ -6,7 +6,9 @@ import { loadConfig, type Config } from "./config";
 import { convertRoutes } from "./routes/convert";
 import { healthRoutes } from "./routes/health";
 
-export async function buildApp(config: Config = loadConfig()): Promise<FastifyInstance> {
+export async function buildApp(
+  config: Config = loadConfig(),
+): Promise<FastifyInstance> {
   const app = Fastify({ logger: true });
 
   await app.register(fastifyMultipart, {

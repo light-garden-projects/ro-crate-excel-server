@@ -21,7 +21,9 @@ export async function excelToCrateJson(fileBuffer: Buffer): Promise<unknown> {
     try {
       await workbook.loadExcel(xlsxPath);
     } catch (cause) {
-      throw new ConversionError("Failed to parse the uploaded Excel file", { cause });
+      throw new ConversionError("Failed to parse the uploaded Excel file", {
+        cause,
+      });
     }
     return workbook.crate.getJson();
   } finally {

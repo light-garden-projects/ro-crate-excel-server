@@ -9,18 +9,24 @@ export async function convertRoutes(app: FastifyInstance): Promise<void> {
     if (!file) {
       return reply
         .code(400)
-        .send({ error: "No file uploaded. Send an .xlsx file in the 'file' field." });
+        .send({
+          error: "No file uploaded. Send an .xlsx file in the 'file' field.",
+        });
     }
 
     if (!file.filename.toLowerCase().endsWith(XLSX_EXTENSION)) {
       return reply
         .code(400)
-        .send({ error: "Unsupported file type. Only .xlsx files are accepted." });
+        .send({
+          error: "Unsupported file type. Only .xlsx files are accepted.",
+        });
     }
 
     const buffer = await file.toBuffer();
     if (file.file.truncated) {
-      return reply.code(413).send({ error: "File exceeds the maximum allowed size." });
+      return reply
+        .code(413)
+        .send({ error: "File exceeds the maximum allowed size." });
     }
 
     try {

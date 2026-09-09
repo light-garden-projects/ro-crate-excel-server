@@ -32,10 +32,17 @@
       body {
         margin: 0;
         padding: 2.5rem 1.25rem 4rem;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
         line-height: 1.6;
         color: var(--fg);
         background: var(--bg);
+      }
+      input {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
       }
       main {
         max-width: 760px;
@@ -128,6 +135,10 @@
         flex-wrap: wrap;
         align-items: center;
       }
+      .tryit input,
+      .tryit button {
+        font: inherit;
+      }
       .tryit button {
         background: var(--accent);
         color: #fff;
@@ -164,15 +175,26 @@
       <h1>RO-Crate Excel Server</h1>
       <p class="lead">
         A small HTTP service that converts an Excel workbook into
-        <a href="https://www.researchobject.org/ro-crate/">RO-Crate</a> JSON-LD using
-        <a href="https://www.npmjs.com/package/ro-crate-excel">ro-crate-excel</a>.
+        <a href="https://www.researchobject.org/ro-crate/">RO-Crate</a> JSON-LD
+        using
+        <a href="https://www.npmjs.com/package/ro-crate-excel">ro-crate-excel</a
+        >.
       </p>
 
       <section class="tryit">
         <h2>Try it</h2>
-        <p>Upload an <code>.xlsx</code> workbook and convert it right here in your browser.</p>
+        <p>
+          Upload an <code>.xlsx</code> workbook and convert it right here in
+          your browser.
+        </p>
         <form id="convert-form">
-          <input type="file" id="file-input" name="file" accept=".xlsx" required />
+          <input
+            type="file"
+            id="file-input"
+            name="file"
+            accept=".xlsx"
+            required
+          />
           <button type="submit" id="convert-btn">Convert</button>
         </form>
         <p id="status" class="status" hidden></p>
@@ -182,11 +204,13 @@
         </div>
       </section>
 
-      <h2><span class="method">POST</span><span class="endpoint">/convert</span></h2>
+      <h2>
+        <span class="method">POST</span><span class="endpoint">/convert</span>
+      </h2>
       <p>
-        Upload a single <code>.xlsx</code> workbook as <code>multipart/form-data</code> in a field
-        named <code>file</code>. The response body is the crate as
-        <code>application/ld+json</code>.
+        Upload a single <code>.xlsx</code> workbook as
+        <code>multipart/form-data</code> in a field named <code>file</code>. The
+        response body is the crate as <code>application/ld+json</code>.
       </p>
 
       <h3>Request</h3>
@@ -220,7 +244,10 @@
         </tr>
         <tr>
           <td><code>400</code></td>
-          <td>No file, a non-<code>.xlsx</code> file, or a workbook that could not be parsed.</td>
+          <td>
+            No file, a non-<code>.xlsx</code> file, or a workbook that could not
+            be parsed.
+          </td>
         </tr>
         <tr>
           <td><code>413</code></td>
@@ -228,11 +255,14 @@
         </tr>
       </table>
 
-      <h2><span class="method">GET</span><span class="endpoint">/health</span></h2>
+      <h2>
+        <span class="method">GET</span><span class="endpoint">/health</span>
+      </h2>
       <p>Liveness check. Returns <code>{ "status": "ok" }</code>.</p>
 
       <footer>
-        Licensed under GPL-3.0. Only one workbook per request is supported at the moment.
+        Licensed under GPL-3.0. Only one workbook per request is supported at
+        the moment.
       </footer>
     </main>
 
@@ -271,7 +301,7 @@
           statusEl.hidden = true;
           output.textContent = json;
           download.href = URL.createObjectURL(
-            new Blob([json], { type: "application/ld+json" })
+            new Blob([json], { type: "application/ld+json" }),
           );
           result.hidden = false;
         } catch (err) {

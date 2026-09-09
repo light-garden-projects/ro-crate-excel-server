@@ -23,7 +23,8 @@ describe("POST /convert", () => {
     const form = new FormData();
     form.append("file", fixture, {
       filename: "sample.xlsx",
-      contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      contentType:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
 
     const response = await app.inject({
