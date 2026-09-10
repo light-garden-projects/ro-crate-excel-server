@@ -30,7 +30,11 @@ export async function convertRoutes(app: FastifyInstance): Promise<void> {
     }
 
     try {
-      const crate = await excelToCrateJson(buffer);
+      const { crate, warnings } = await excelToCrateJson(buffer);
+      const report = (request.query as { report?: string }).report;
+      if (report) {
+        return reply.send({ crate, warnings });
+      }
       return reply.type("application/ld+json").send(crate);
     } catch (error) {
       if (error instanceof ConversionError) {

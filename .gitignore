@@ -3,3 +3,5 @@ dist/
 *.log
 .env
 test/fixtures/sample.xlsx
+test-data/~$metadata1.xlsx
+.DS_Store

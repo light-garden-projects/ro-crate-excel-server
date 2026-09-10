@@ -203,6 +203,13 @@ a {
   background: rgba(209, 67, 67, 0.15);
   color: #d14343;
 }
+.banner.warning {
+  background: rgba(212, 144, 31, 0.15);
+  color: #b9760f;
+}
+#convert-warnings {
+  margin-top: 1rem;
+}
 .results {
   list-style: none;
   margin: 0;

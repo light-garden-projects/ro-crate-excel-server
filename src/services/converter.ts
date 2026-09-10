@@ -11,7 +11,20 @@ export class ConversionError extends Error {
   }
 }
 
-export async function excelToCrateJson(fileBuffer: Buffer): Promise<unknown> {
+export interface ConversionWarning {
+  source: "ro-crate-excel";
+  level: "warning" | "error";
+  message: string;
+}
+
+export interface ConversionResult {
+  crate: unknown;
+  warnings: ConversionWarning[];
+}
+
+export async function excelToCrateJson(
+  fileBuffer: Buffer,
+): Promise<ConversionResult> {
   // ro-crate-excel reads from disk, so the upload is staged in a private temp dir.
   const workDir = await mkdtemp(join(tmpdir(), "rocxl-"));
   const xlsxPath = join(workDir, "ro-crate-metadata.xlsx");
@@ -25,8 +38,34 @@ export async function excelToCrateJson(fileBuffer: Buffer): Promise<unknown> {
         cause,
       });
     }
-    return workbook.crate.getJson();
+    return {
+      crate: workbook.crate.getJson(),
+      warnings: collectWarnings(workbook.log),
+    };
   } finally {
     await rm(workDir, { recursive: true, force: true });
   }
 }
+
+function collectWarnings(log: {
+  warning: string[];
+  errors: string[];
+}): ConversionWarning[] {
+  return [
+    ...log.warning.map(
+      (message): ConversionWarning => ({
+        source: "ro-crate-excel",
+        level: "warning",
+        message,
+      }),
+    ),
+    ...log.errors.map(
+      (message): ConversionWarning => ({
+        source: "ro-crate-excel",
+        level: "error",
+        message,
+      }),
+    ),
+  ];
+}
+

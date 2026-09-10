@@ -41,6 +41,34 @@ describe("POST /convert", () => {
     expect(Array.isArray(body["@graph"])).toBe(true);
   });
 
+  it("returns a { crate, warnings } envelope when report=1", async () => {
+    const form = new FormData();
+    form.append("file", fixture, {
+      filename: "sample.xlsx",
+      contentType:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/convert?report=1",
+      payload: form,
+      headers: form.getHeaders(),
+    });
+
+    expect(response.statusCode).toBe(200);
+    const body = response.json();
+    expect(body.crate).toHaveProperty("@graph");
+    expect(Array.isArray(body.warnings)).toBe(true);
+    for (const warning of body.warnings) {
+      expect(warning).toMatchObject({
+        source: "ro-crate-excel",
+        level: expect.stringMatching(/^(warning|error)$/),
+        message: expect.any(String),
+      });
+    }
+  });
+
   it("rejects a request with no file", async () => {
     const form = new FormData();
     form.append("notafile", "hello");

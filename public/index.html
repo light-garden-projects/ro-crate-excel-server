@@ -46,6 +46,15 @@
   -F "file=@ro-crate-metadata.xlsx" \
   https://ro-crate-excel-api.light.garden/convert</code></pre>
 
+      <p>
+        Add <code>?report=1</code> to receive an
+        <code>application/json</code> envelope
+        <code>{ "crate": { ... }, "warnings": [ ... ] }</code> instead of the
+        bare crate. Each warning has a <code>source</code>, a
+        <code>level</code> (<code>warning</code> or <code>error</code>), and a
+        <code>message</code>.
+      </p>
+
       <h3>Responses</h3>
       <table>
         <tr>
@@ -89,6 +98,10 @@
         <div id="result" hidden>
           <a id="download" download="ro-crate-metadata.json">Download .json</a>
           <pre><code id="output"></code></pre>
+          <div id="convert-warnings" hidden>
+            <p class="banner warning">Warnings</p>
+            <ul id="convert-warning-list" class="results"></ul>
+          </div>
         </div>
       </details>
 
