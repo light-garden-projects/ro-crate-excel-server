@@ -44,7 +44,8 @@ export function findUnresolvedReferences(crate: unknown): ConversionWarning[] {
 
   const unresolved = new Map<string, { count: number; referrer: string }>();
   for (const entity of graph) {
-    const from = typeof entity["@id"] === "string" ? entity["@id"] : "(unknown)";
+    const from =
+      typeof entity["@id"] === "string" ? entity["@id"] : "(unknown)";
     for (const [prop, value] of Object.entries(entity)) {
       if (prop === "@id" || prop === "@type" || prop === "@context") continue;
       collectRefs(value, (refId) => {

@@ -7,19 +7,15 @@ export async function convertRoutes(app: FastifyInstance): Promise<void> {
   app.post("/convert", async (request, reply) => {
     const file = await request.file();
     if (!file) {
-      return reply
-        .code(400)
-        .send({
-          error: "No file uploaded. Send an .xlsx file in the 'file' field.",
-        });
+      return reply.code(400).send({
+        error: "No file uploaded. Send an .xlsx file in the 'file' field.",
+      });
     }
 
     if (!file.filename.toLowerCase().endsWith(XLSX_EXTENSION)) {
-      return reply
-        .code(400)
-        .send({
-          error: "Unsupported file type. Only .xlsx files are accepted.",
-        });
+      return reply.code(400).send({
+        error: "Unsupported file type. Only .xlsx files are accepted.",
+      });
     }
 
     const buffer = await file.toBuffer();

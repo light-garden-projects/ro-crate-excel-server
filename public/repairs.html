@@ -11,10 +11,10 @@
     <main>
       <h1>Repair strategies</h1>
       <p class="lead">
-        <a href="./">RO-Crate Excel Server</a> automatically fixes a small set of
-        unambiguous spreadsheet issues before handing the workbook to
-        <a href="https://www.npmjs.com/package/ro-crate-excel">ro-crate-excel</a>.
-        Every repair is reported as a
+        <a href="./">RO-Crate Excel Server</a> automatically fixes a small set
+        of unambiguous spreadsheet issues before handing the workbook to
+        <a href="https://www.npmjs.com/package/ro-crate-excel">ro-crate-excel</a
+        >. Every repair is reported as a
         <span class="result-source repair">repaired</span> warning on
         <code>/convert?report=1</code> so nothing happens silently. This page
         documents what we change and why.
@@ -28,8 +28,8 @@
       </p>
       <p>
         <strong>Why.</strong> ro-crate-excel only treats a cell as a list of
-        references when it is wrapped in <code>[ ]</code>. Without them the whole
-        cell is kept as a single value, producing one broken
+        references when it is wrapped in <code>[ ]</code>. Without them the
+        whole cell is kept as a single value, producing one broken
         <code>@id</code> that joins two identifiers with a comma &mdash; and the
         second reference is lost.
       </p>

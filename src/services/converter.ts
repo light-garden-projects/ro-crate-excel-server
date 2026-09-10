@@ -52,7 +52,6 @@ export async function excelToCrateJson(
   };
 }
 
-
 function collectWarnings(log: {
   warning: string[];
   errors: string[];
@@ -74,4 +73,3 @@ function collectWarnings(log: {
     ),
   ];
 }
-

@@ -122,9 +122,7 @@ describe("excelToCrateJson unresolved-reference integration", () => {
     )) as { warnings: Array<Record<string, unknown>> };
 
     expect(
-      warnings.some(
-        (w) => w.source === "check" && w.reference === "#ghost",
-      ),
+      warnings.some((w) => w.source === "check" && w.reference === "#ghost"),
     ).toBe(true);
   });
 });

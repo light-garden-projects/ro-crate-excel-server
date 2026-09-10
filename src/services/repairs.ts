@@ -17,7 +17,7 @@ export const repairs: Repair[] = [
     id: "reference-list-unbracketed",
     title: "Unbracketed reference list",
     description:
-      "A cell listing several #-references separated by commas but without the surrounding [ ] that ro-crate-excel needs to split them. Left as-is it becomes a single broken @id like \"#a, #b\". We wrap the value in [ ] so each reference stays separate.",
+      'A cell listing several #-references separated by commas but without the surrounding [ ] that ro-crate-excel needs to split them. Left as-is it becomes a single broken @id like "#a, #b". We wrap the value in [ ] so each reference stays separate.',
     detect(value) {
       const trimmed = value.trim();
       if (trimmed.startsWith("[")) return false;
