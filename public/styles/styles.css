@@ -242,6 +242,9 @@ a {
 .result-item.repair {
   border-left-color: #7b5cff;
 }
+.result-item.check {
+  border-left-color: #d4901f;
+}
 .result-source {
   font-weight: 600;
   text-transform: uppercase;
@@ -259,6 +262,10 @@ a {
 .result-source.repair {
   background: rgba(123, 92, 255, 0.18);
   color: #6244d8;
+}
+.result-source.check {
+  background: rgba(212, 144, 31, 0.18);
+  color: #a5691a;
 }
 .result-item .result-status {
   font-weight: 600;

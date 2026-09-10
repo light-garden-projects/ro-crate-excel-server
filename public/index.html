@@ -52,7 +52,10 @@
         <code>{ "crate": { ... }, "warnings": [ ... ] }</code> instead of the
         bare crate. Each warning has a <code>source</code>, a
         <code>level</code> (<code>warning</code> or <code>error</code>), and a
-        <code>message</code>.
+        <code>message</code>. Warnings with <code>source: "check"</code> flag
+        <code>{ "@id" }</code> references that point to an entity not defined in
+        the crate (for example, an entity described in another sheet or
+        workbook).
       </p>
 
       <h3>Responses</h3>
@@ -105,7 +108,9 @@
               ro-crate-excel;
               <span class="result-source repair">repaired</span> is an automatic
               fix we applied &mdash; see
-              <a href="./repairs.html">repair strategies</a>.
+              <a href="./repairs.html">repair strategies</a>;
+              <span class="result-source check">check</span> flags a reference
+              that points to an entity not defined in the crate.
             </p>
             <ul id="convert-warning-list" class="results"></ul>
           </div>

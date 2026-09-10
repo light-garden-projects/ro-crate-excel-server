@@ -1,5 +1,6 @@
 import { Workbook } from "ro-crate-excel";
 import { repairWorkbookBuffer } from "./repairs";
+import { findUnresolvedReferences } from "./checks";
 
 // Raised when the uploaded workbook cannot be parsed into a crate.
 export class ConversionError extends Error {
@@ -10,13 +11,15 @@ export class ConversionError extends Error {
 }
 
 export interface ConversionWarning {
-  source: "ro-crate-excel" | "repair";
+  source: "ro-crate-excel" | "repair" | "check";
   level: "warning" | "error";
   message: string;
   repair?: string;
   cell?: string;
   before?: string;
   after?: string;
+  reference?: string;
+  count?: number;
 }
 
 export interface ConversionResult {
@@ -38,9 +41,14 @@ export async function excelToCrateJson(
       cause,
     });
   }
+  const crate = workbook.crate.getJson();
   return {
-    crate: workbook.crate.getJson(),
-    warnings: [...repairWarnings, ...collectWarnings(workbook.log)],
+    crate,
+    warnings: [
+      ...repairWarnings,
+      ...collectWarnings(workbook.log),
+      ...findUnresolvedReferences(crate),
+    ],
   };
 }
 
