@@ -5,3 +5,4 @@ dist/
 test/fixtures/sample.xlsx
 test-data/~$metadata1.xlsx
 .DS_Store
+test-data/ro-crate-metadata (2).json

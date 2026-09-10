@@ -1,7 +1,5 @@
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
 import { Workbook } from "ro-crate-excel";
+import { repairWorkbookBuffer } from "./repairs";
 
 // Raised when the uploaded workbook cannot be parsed into a crate.
 export class ConversionError extends Error {
@@ -12,9 +10,13 @@ export class ConversionError extends Error {
 }
 
 export interface ConversionWarning {
-  source: "ro-crate-excel";
+  source: "ro-crate-excel" | "repair";
   level: "warning" | "error";
   message: string;
+  repair?: string;
+  cell?: string;
+  before?: string;
+  after?: string;
 }
 
 export interface ConversionResult {
@@ -25,27 +27,23 @@ export interface ConversionResult {
 export async function excelToCrateJson(
   fileBuffer: Buffer,
 ): Promise<ConversionResult> {
-  // ro-crate-excel reads from disk, so the upload is staged in a private temp dir.
-  const workDir = await mkdtemp(join(tmpdir(), "rocxl-"));
-  const xlsxPath = join(workDir, "ro-crate-metadata.xlsx");
+  const workbook = new Workbook();
+  let repairWarnings: ConversionWarning[];
   try {
-    await writeFile(xlsxPath, fileBuffer);
-    const workbook = new Workbook();
-    try {
-      await workbook.loadExcel(xlsxPath);
-    } catch (cause) {
-      throw new ConversionError("Failed to parse the uploaded Excel file", {
-        cause,
-      });
-    }
-    return {
-      crate: workbook.crate.getJson(),
-      warnings: collectWarnings(workbook.log),
-    };
-  } finally {
-    await rm(workDir, { recursive: true, force: true });
+    const repaired = await repairWorkbookBuffer(fileBuffer);
+    repairWarnings = repaired.warnings;
+    await workbook.loadExcelFromBuffer(repaired.buffer);
+  } catch (cause) {
+    throw new ConversionError("Failed to parse the uploaded Excel file", {
+      cause,
+    });
   }
+  return {
+    crate: workbook.crate.getJson(),
+    warnings: [...repairWarnings, ...collectWarnings(workbook.log)],
+  };
 }
+
 
 function collectWarnings(log: {
   warning: string[];

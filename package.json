@@ -16,6 +16,7 @@
   "dependencies": {
     "@fastify/multipart": "^10.1.1",
     "@fastify/static": "^10.1.3",
+    "exceljs": "^4.4.0",
     "fastify": "^5.12.3",
     "ro-crate": "^3.7.2",
     "ro-crate-excel": "^1.2.1"

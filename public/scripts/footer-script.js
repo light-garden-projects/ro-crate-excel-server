@@ -48,12 +48,13 @@ form.addEventListener("submit", async (event) => {
     const warnings = report.warnings ?? [];
     if (warnings.length) {
       for (const warning of warnings) {
+        const isRepair = warning.source === "repair";
         const li = document.createElement("li");
-        li.className = `result-item ${warning.level}`;
-        const status = document.createElement("span");
-        status.className = "result-status";
-        status.textContent = warning.level;
-        li.append(status, document.createTextNode(warning.message));
+        li.className = `result-item ${isRepair ? "repair" : warning.level}`;
+        const source = document.createElement("span");
+        source.className = `result-source ${isRepair ? "repair" : "library"}`;
+        source.textContent = isRepair ? "repaired" : "ro-crate";
+        li.append(source, document.createTextNode(warning.message));
         convertWarningList.append(li);
       }
     }

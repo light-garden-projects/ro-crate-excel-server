@@ -6,6 +6,7 @@ declare module "ro-crate-excel" {
     workbook: { xlsx: { writeFile(path: string): Promise<void> } };
     log: { info: string[]; warning: string[]; errors: string[] };
     loadExcel(filePath: string, add?: boolean): Promise<void>;
+    loadExcelFromBuffer(buffer: Buffer, add?: boolean): Promise<void>;
     crateToWorkbook(): Promise<void>;
   }
 }

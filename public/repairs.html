@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Repair strategies &middot; RO-Crate Excel Server</title>
+    <link rel="icon" href="./favicon/favicon.ico" sizes="any" />
+    <link rel="stylesheet" href="./styles/styles.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Repair strategies</h1>
+      <p class="lead">
+        <a href="./">RO-Crate Excel Server</a> automatically fixes a small set of
+        unambiguous spreadsheet issues before handing the workbook to
+        <a href="https://www.npmjs.com/package/ro-crate-excel">ro-crate-excel</a>.
+        Every repair is reported as a
+        <span class="result-source repair">repaired</span> warning on
+        <code>/convert?report=1</code> so nothing happens silently. This page
+        documents what we change and why.
+      </p>
+
+      <h2>Unbracketed reference list</h2>
+      <p>
+        <strong>What it fixes.</strong> A cell that lists several
+        <code>#</code>-references separated by commas, but without the square
+        brackets that ro-crate-excel needs in order to split them.
+      </p>
+      <p>
+        <strong>Why.</strong> ro-crate-excel only treats a cell as a list of
+        references when it is wrapped in <code>[ ]</code>. Without them the whole
+        cell is kept as a single value, producing one broken
+        <code>@id</code> that joins two identifiers with a comma &mdash; and the
+        second reference is lost.
+      </p>
+      <p>
+        <strong>How.</strong> When every comma-separated token in a plain cell
+        starts with <code>#</code>, we wrap the value in <code>[ ]</code> so
+        ro-crate-excel's own splitter produces one reference per token. Cells
+        that are already bracketed, or whose tokens are not all
+        <code>#</code>-references (such as ordinary prose), are left untouched.
+      </p>
+      <h3>Example</h3>
+      <table>
+        <tr>
+          <th>Cell before</th>
+          <th>Cell after</th>
+        </tr>
+        <tr>
+          <td><code>#Person_a, #Person_b</code></td>
+          <td><code>[#Person_a, #Person_b]</code></td>
+        </tr>
+      </table>
+      <p>Which changes the resulting crate from:</p>
+      <pre><code>"contributor": { "@id": "#Person_a, #Person_b" }</code></pre>
+      <p>to:</p>
+      <pre><code>"contributor": [
+  { "@id": "#Person_a" },
+  { "@id": "#Person_b" }
+]</code></pre>
+
+      <footer>
+        Licensed under GPL-3.0.
+        <a href="./">Back to the API overview</a>.
+      </footer>
+    </main>
+  </body>
+</html>
