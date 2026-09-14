@@ -16,8 +16,11 @@
         <a href="https://www.npmjs.com/package/ro-crate-excel">ro-crate-excel</a
         >. Every repair is reported as a
         <span class="result-source repair">repaired</span> warning on
-        <code>/convert?report=1</code> so nothing happens silently. This page
-        documents what we change and why.
+        <code>/convert?report=1</code>, so no change to your data happens
+        silently. We also apply a few
+        <a href="#silent-cleanups">silent cleanups</a> that remove harmless
+        artifacts left by the library itself &mdash; these lose no data and are
+        not reported as warnings. This page documents what we change and why.
       </p>
 
       <h2>Unbracketed reference list</h2>
@@ -58,6 +61,50 @@
   { "@id": "#Person_a" },
   { "@id": "#Person_b" }
 ]</code></pre>
+
+      <h2 id="silent-cleanups">Silent cleanups</h2>
+      <p>
+        Unlike the repairs above, these remove artifacts produced by
+        ro-crate-excel rather than fixing anything in your spreadsheet. They
+        lose no data, so they are applied silently &mdash; you will not see a
+        <span class="result-source repair">repaired</span> warning for them.
+      </p>
+
+      <h3>Empty <code>isRef_</code> reference columns</h3>
+      <p>
+        <strong>What it fixes.</strong> Properties such as
+        <code>isRef_author</code> or <code>isRef_license</code> left on an
+        entity with an empty value.
+      </p>
+      <p>
+        <strong>Why.</strong> An <code>isRef_</code> column tells ro-crate-excel
+        that the cell holds a reference to another entity; the library strips
+        the <code>isRef_</code> prefix and turns the value into a link. That
+        conversion only happens when the cell has a value, so a blank reference
+        column is passed straight through as a literal
+        <code>isRef_author: ""</code>. With the crate's
+        <code>@vocab</code> mapping this expands to a meaningless
+        <code>schema.org</code> term, which can confuse generic RO-Crate tools.
+      </p>
+      <p>
+        <strong>How.</strong> After conversion we drop any property whose name
+        starts with <code>isRef_</code> and whose value is empty. Columns that
+        actually contain a reference are converted normally by the library and
+        are never touched.
+      </p>
+      <h4>Example</h4>
+      <p>The root entity changes from:</p>
+      <pre><code>{
+  "@id": "./",
+  "name": "BKRLCC PROMOTIONAL VIDEOS",
+  "isRef_license": "",
+  "isRef_author": ""
+}</code></pre>
+      <p>to:</p>
+      <pre><code>{
+  "@id": "./",
+  "name": "BKRLCC PROMOTIONAL VIDEOS"
+}</code></pre>
 
       <footer>
         Licensed under GPL-3.0.

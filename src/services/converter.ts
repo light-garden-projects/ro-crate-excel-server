@@ -42,6 +42,7 @@ export async function excelToCrateJson(
     });
   }
   const crate = workbook.crate.getJson();
+  stripLeakedRefPrefixes(crate);
   return {
     crate,
     warnings: [
@@ -50,6 +51,21 @@ export async function excelToCrateJson(
       ...findUnresolvedReferences(crate),
     ],
   };
+}
+
+// ro-crate-excel leaves empty isRef_* columns as literal properties (its prefix
+// stripping only fires when the cell has a value). Drop them so the output carries
+// no bogus schema:isRef_* predicates.
+function stripLeakedRefPrefixes(crate: unknown): void {
+  const graph = (crate as { "@graph"?: Array<Record<string, unknown>> })[
+    "@graph"
+  ];
+  if (!Array.isArray(graph)) return;
+  for (const entity of graph) {
+    for (const key of Object.keys(entity)) {
+      if (key.startsWith("isRef_") && entity[key] === "") delete entity[key];
+    }
+  }
 }
 
 function collectWarnings(log: {
