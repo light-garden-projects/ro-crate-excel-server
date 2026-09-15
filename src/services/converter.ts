@@ -43,10 +43,12 @@ export async function excelToCrateJson(
   }
   const crate = workbook.crate.getJson();
   stripLeakedRefPrefixes(crate);
+  const booleanWarnings = coerceKnownBooleans(crate);
   return {
     crate,
     warnings: [
       ...repairWarnings,
+      ...booleanWarnings,
       ...collectWarnings(workbook.log),
       ...findUnresolvedReferences(crate),
     ],
@@ -66,6 +68,38 @@ function stripLeakedRefPrefixes(crate: unknown): void {
       if (key.startsWith("isRef_") && entity[key] === "") delete entity[key];
     }
   }
+}
+
+// Boolean-flag columns (isPublishable, hasConsent, ...) arrive from Excel as the
+// text "TRUE"/"FALSE", which is a truthy string. Coerce them to real booleans so
+// consumers gating on the value behave correctly.
+const BOOLEAN_KEY = /^(is|has|can)[A-Z]/;
+const BOOLEAN_VALUE = /^(true|false)$/i;
+
+function coerceKnownBooleans(crate: unknown): ConversionWarning[] {
+  const graph = (crate as { "@graph"?: Array<Record<string, unknown>> })[
+    "@graph"
+  ];
+  if (!Array.isArray(graph)) return [];
+  const warnings: ConversionWarning[] = [];
+  for (const entity of graph) {
+    const id = typeof entity["@id"] === "string" ? entity["@id"] : "(unknown)";
+    for (const [key, value] of Object.entries(entity)) {
+      if (!BOOLEAN_KEY.test(key) || typeof value !== "string") continue;
+      if (!BOOLEAN_VALUE.test(value)) continue;
+      const coerced = value.toLowerCase() === "true";
+      entity[key] = coerced;
+      warnings.push({
+        source: "repair",
+        level: "warning",
+        message: `Boolean stored as text in "${id}": ${key} "${value}" \u2192 ${coerced}`,
+        repair: "boolean-as-text",
+        before: value,
+        after: String(coerced),
+      });
+    }
+  }
+  return warnings;
 }
 
 function collectWarnings(log: {

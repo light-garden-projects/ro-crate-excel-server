@@ -62,6 +62,40 @@
   { "@id": "#Person_b" }
 ]</code></pre>
 
+      <h2>Boolean values stored as text</h2>
+      <p>
+        <strong>What it fixes.</strong> A flag such as
+        <code>isPublishable</code> whose value is the text
+        <code>"TRUE"</code> or <code>"FALSE"</code> (as Excel writes booleans)
+        rather than a real boolean.
+      </p>
+      <p>
+        <strong>Why.</strong> The string <code>"FALSE"</code> is
+        <em>truthy</em> in most programming languages, so code that gates on
+        <code>isPublishable</code> would treat a not-publishable item as
+        publishable &mdash; the opposite of what the sender intended.
+      </p>
+      <p>
+        <strong>How.</strong> When a property name starts with <code>is</code>,
+        <code>has</code>, or <code>can</code> followed by a capital letter (for
+        example <code>isPublishable</code>, <code>hasConsent</code>,
+        <code>canDownload</code>) and its value is exactly <code>true</code> or
+        <code>false</code> (any case), we replace the text with the matching
+        boolean. Reference-valued properties such as <code>isBasedOn</code> hold
+        an <code>@id</code> rather than the word, so they are never affected.
+      </p>
+      <h3>Example</h3>
+      <table>
+        <tr>
+          <th>Value before</th>
+          <th>Value after</th>
+        </tr>
+        <tr>
+          <td><code>"isPublishable": "FALSE"</code></td>
+          <td><code>"isPublishable": false</code></td>
+        </tr>
+      </table>
+
       <h2 id="silent-cleanups">Silent cleanups</h2>
       <p>
         Unlike the repairs above, these remove artifacts produced by
