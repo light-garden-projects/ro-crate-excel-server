@@ -27,7 +27,10 @@ export async function buildApp(
   );
 
   await app.register(fastifyMultipart, {
-    limits: { fileSize: config.maxFileSize, files: 1 },
+    // preservePath keeps the directory portion of each part's filename so a
+    // workbook can carry its archive-root-relative path (busboy basenames it otherwise).
+    preservePath: true,
+    limits: { fileSize: config.maxFileSize, files: config.maxFiles },
   });
 
   // Resolves to <project>/public from both src (tsx) and dist (compiled).

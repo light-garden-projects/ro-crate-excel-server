@@ -30,6 +30,11 @@
         (GPL), but is NOT an official service associated with RO-Crate.
       </p>
       <p>
+        Currently this service is in active development and may change without
+        notice. If you have any questions or encounter issues, please reach out
+        to the maintainers.
+      </p>
+      <p>
         Code is at
         <a
           href="https://github.com/light-garden-projects/ro-crate-excel-server"
@@ -42,9 +47,14 @@
         <span class="method">POST</span><span class="endpoint">/convert</span>
       </h2>
       <p>
-        Upload a single <code>.xlsx</code> workbook as
-        <code>multipart/form-data</code> in a field named <code>file</code>. The
-        response body is the crate as <code>application/ld+json</code>.
+        Upload one or more <code>.xlsx</code> workbooks as
+        <code>multipart/form-data</code>, each in a field named
+        <code>file</code>. Set every part's <em>filename</em> to that workbook's
+        path <strong>relative to the archive root</strong> (POSIX
+        <code>/</code> separators), for example
+        <code>Collection A/Videos/metadata.xlsx</code>. The server derives each
+        sheet's folder prefix from that path so the (forthcoming) merge step can
+        rebase its file references.
       </p>
 
       <h3>Request</h3>
@@ -57,25 +67,38 @@
         <tr>
           <td><code>file</code></td>
           <td>file (<code>.xlsx</code>)</td>
-          <td>Required. The RO-Crate metadata spreadsheet.</td>
+          <td>
+            Required, repeatable. The RO-Crate metadata spreadsheet. Its
+            <em>filename</em> is treated as the archive-root-relative path and
+            must be a relative POSIX path: no leading <code>/</code>, no
+            <code>..</code> or <code>.</code> segments, and unique across the
+            upload.
+          </td>
         </tr>
       </table>
 
       <h3>Example</h3>
-      <pre><code>curl -X POST \
+      <pre><code># Single workbook
+curl -X POST \
   -F "file=@ro-crate-metadata.xlsx" \
+  https://ro-crate-excel-api.light.garden/convert
+
+# Multiple workbooks, each carrying its archive-root-relative path
+curl -X POST \
+  -F "file=@root.xlsx;filename=ro-crate-metadata.xlsx" \
+  -F "file=@videos.xlsx;filename=Collection A/Videos/metadata.xlsx" \
   https://ro-crate-excel-api.light.garden/convert</code></pre>
 
       <p>
         Add <code>?report=1</code> to receive an
         <code>application/json</code> envelope
         <code>{ "crate": { ... }, "warnings": [ ... ] }</code> instead of the
-        bare crate. Each warning has a <code>source</code>, a
-        <code>level</code> (<code>warning</code> or <code>error</code>), and a
-        <code>message</code>. Warnings with <code>source: "check"</code> flag
-        <code>{ "@id" }</code> references that point to an entity not defined in
-        the crate (for example, an entity described in another sheet or
-        workbook).
+        bare crate (single-workbook uploads). Each warning has a
+        <code>source</code>, a <code>level</code> (<code>warning</code> or
+        <code>error</code>), and a <code>message</code>. Warnings with
+        <code>source: "check"</code> flag <code>{ "@id" }</code> references that
+        point to an entity not defined in the crate (for example, an entity
+        described in another sheet or workbook).
       </p>
 
       <h3>Responses</h3>
@@ -86,18 +109,33 @@
         </tr>
         <tr>
           <td><code>200</code></td>
-          <td>RO-Crate JSON-LD (<code>application/ld+json</code>).</td>
+          <td>
+            <strong>Single workbook:</strong> RO-Crate JSON-LD
+            (<code>application/ld+json</code>), or a
+            <code>{ crate, warnings }</code> envelope with
+            <code>?report=1</code>.<br />
+            <strong>Multiple workbooks:</strong> an interim
+            <code>application/json</code> envelope
+            <code
+              >{ "sheets": [ { "path", "crate", "warnings" }, &hellip; ] }</code
+            >
+            with one entry per uploaded workbook. A single merged crate will
+            replace this once the merge step lands.
+          </td>
         </tr>
         <tr>
           <td><code>400</code></td>
           <td>
-            No file, a non-<code>.xlsx</code> file, or a workbook that could not
-            be parsed.
+            No file, a non-<code>.xlsx</code> file, an absolute or
+            traversal-containing (<code>..</code>) path, a duplicate path, or a
+            workbook that could not be parsed.
           </td>
         </tr>
         <tr>
           <td><code>413</code></td>
-          <td>The uploaded file exceeds the size limit.</td>
+          <td>
+            A file exceeds the size limit, or too many files were uploaded.
+          </td>
         </tr>
       </table>
 
