@@ -52,9 +52,22 @@
         <code>file</code>. Set every part's <em>filename</em> to that workbook's
         path <strong>relative to the archive root</strong> (POSIX
         <code>/</code> separators), for example
-        <code>Collection A/Videos/metadata.xlsx</code>. The server derives each
-        sheet's folder prefix from that path so the (forthcoming) merge step can
-        rebase its file references.
+        <code>Collection A/Videos/metadata.xlsx</code>. When several workbooks
+        are uploaded together they are <strong>merged into one crate</strong>:
+        the master collection (the workbook whose root declares no parent) stays
+        at <code>./</code>, every other workbook is folded in under it, and each
+        sheet's folder prefix rebases its file references.
+      </p>
+      <p>
+        <strong>Membership convention.</strong> To link objects to their
+        collection, give each <code>RepositoryObject</code> row an
+        <code>isRef_pcdm:memberOf</code> value of <code>./</code> (its own
+        collection root). The merge rewrites that to the collection's identifier
+        and synthesises the inverse <code>pcdm:hasMember</code> automatically.
+        Contextual entities (Person, Place, Language, Organization) must
+        <strong>not</strong> carry <code>pcdm:memberOf</code> &mdash; they are
+        linked through property references such as <code>creator</code>,
+        <code>inLanguage</code>, and <code>publisher</code>.
       </p>
 
       <h3>Request</h3>
@@ -110,17 +123,12 @@ curl -X POST \
         <tr>
           <td><code>200</code></td>
           <td>
-            <strong>Single workbook:</strong> RO-Crate JSON-LD
-            (<code>application/ld+json</code>), or a
-            <code>{ crate, warnings }</code> envelope with
-            <code>?report=1</code>.<br />
-            <strong>Multiple workbooks:</strong> an interim
-            <code>application/json</code> envelope
-            <code
-              >{ "sheets": [ { "path", "crate", "warnings" }, &hellip; ] }</code
-            >
-            with one entry per uploaded workbook. A single merged crate will
-            replace this once the merge step lands.
+            A single RO-Crate JSON-LD document
+            (<code>application/ld+json</code>) &mdash; the converted workbook, or
+            the merged crate when several are uploaded. With
+            <code>?report=1</code> the response is instead a
+            <code>{ crate, warnings }</code> envelope, whose warnings include any
+            <code>source: "merge"</code> entries from the merge step.
           </td>
         </tr>
         <tr>
@@ -168,7 +176,9 @@ curl -X POST \
               fix we applied &mdash; see
               <a href="./repairs.html">repair strategies</a>;
               <span class="result-source check">check</span> flags a reference
-              that points to an entity not defined in the crate.
+              that points to an entity not defined in the crate;
+              <span class="result-source merge">merge</span> reports an issue
+              from merging multiple workbooks into one crate.
             </p>
             <ul id="convert-warning-list" class="results"></ul>
           </div>

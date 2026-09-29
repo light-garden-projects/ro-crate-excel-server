@@ -1,5 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { ConversionError, excelToCrateJson } from "../services/converter";
+import { mergeCrates, type SheetCrate } from "../services/merge";
 
 const XLSX_EXTENSION = ".xlsx";
 
@@ -130,13 +131,22 @@ export async function convertRoutes(app: FastifyInstance): Promise<void> {
         return reply.type("application/ld+json").send(crate);
       }
 
-      // Multiple sheets: interim per-sheet envelope until the merge step lands.
-      const results = [];
+      // Multiple sheets: convert each, then merge into one bundled crate.
+      const converted: SheetCrate[] = [];
       for (const sheet of sheets) {
         const { crate, warnings } = await excelToCrateJson(sheet.buffer);
-        results.push({ path: sheet.relativePath, crate, warnings });
+        converted.push({
+          relativePath: sheet.relativePath,
+          folderPrefix: sheet.folderPrefix,
+          crate,
+          warnings,
+        });
       }
-      return reply.send({ sheets: results });
+      const { crate, warnings } = mergeCrates(converted);
+      if (report) {
+        return reply.send({ crate, warnings });
+      }
+      return reply.type("application/ld+json").send(crate);
     } catch (error) {
       if (error instanceof ConversionError) {
         return reply.code(400).send({ error: error.message });

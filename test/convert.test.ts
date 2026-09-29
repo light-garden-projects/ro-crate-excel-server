@@ -102,7 +102,7 @@ describe("POST /convert", () => {
     expect(response.json().error).toContain("Only .xlsx");
   });
 
-  it("converts multiple workbooks into a per-sheet envelope", async () => {
+  it("merges multiple workbooks into a single crate", async () => {
     const form = new FormData();
     form.append("file", fixture, {
       filepath: "ro-crate-metadata.xlsx",
@@ -123,17 +123,15 @@ describe("POST /convert", () => {
     });
 
     expect(response.statusCode).toBe(200);
+    expect(response.headers["content-type"]).toContain("application/ld+json");
     const body = response.json();
-    expect(Array.isArray(body.sheets)).toBe(true);
-    expect(body.sheets).toHaveLength(2);
-    expect(body.sheets.map((s: { path: string }) => s.path)).toEqual([
-      "ro-crate-metadata.xlsx",
-      "Collection A/Videos/metadata.xlsx",
-    ]);
-    for (const sheet of body.sheets) {
-      expect(sheet.crate).toHaveProperty("@graph");
-      expect(Array.isArray(sheet.warnings)).toBe(true);
-    }
+    expect(body).toHaveProperty("@context");
+    expect(Array.isArray(body["@graph"])).toBe(true);
+    // A merged crate has exactly one metadata descriptor and one root dataset.
+    const descriptors = body["@graph"].filter(
+      (e: { "@id"?: string }) => e["@id"] === "ro-crate-metadata.json",
+    );
+    expect(descriptors).toHaveLength(1);
   });
 
   it("rejects a path with a traversal segment", async () => {

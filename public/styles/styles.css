@@ -284,6 +284,9 @@ a {
 .result-item.check {
   border-left-color: #d4901f;
 }
+.result-item.merge {
+  border-left-color: #26a69a;
+}
 .result-source {
   font-weight: 600;
   text-transform: uppercase;
@@ -305,6 +308,10 @@ a {
 .result-source.check {
   background: rgba(212, 144, 31, 0.18);
   color: #a5691a;
+}
+.result-source.merge {
+  background: rgba(38, 166, 154, 0.18);
+  color: #1a7f76;
 }
 .result-item .result-status {
   font-weight: 600;

@@ -49,14 +49,16 @@ form.addEventListener("submit", async (event) => {
     if (warnings.length) {
       for (const warning of warnings) {
         const li = document.createElement("li");
-        li.className = `result-item ${warning.source === "repair" ? "repair" : warning.source === "check" ? "check" : warning.level}`;
+        li.className = `result-item ${warning.source === "repair" ? "repair" : warning.source === "check" ? "check" : warning.source === "merge" ? "merge" : warning.level}`;
         const source = document.createElement("span");
         const badge =
           warning.source === "repair"
             ? { className: "repair", label: "repaired" }
             : warning.source === "check"
               ? { className: "check", label: "check" }
-              : { className: "library", label: "ro-crate" };
+              : warning.source === "merge"
+                ? { className: "merge", label: "merge" }
+                : { className: "library", label: "ro-crate" };
         source.className = `result-source ${badge.className}`;
         source.textContent = badge.label;
         li.append(source, document.createTextNode(warning.message));

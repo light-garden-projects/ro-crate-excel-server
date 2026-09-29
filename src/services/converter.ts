@@ -11,7 +11,7 @@ export class ConversionError extends Error {
 }
 
 export interface ConversionWarning {
-  source: "ro-crate-excel" | "repair" | "check";
+  source: "ro-crate-excel" | "repair" | "check" | "merge";
   level: "warning" | "error";
   message: string;
   repair?: string;
