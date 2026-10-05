@@ -214,4 +214,70 @@ describe("mergeCrates", () => {
     // The cross-sheet reference resolves, so no check warning should remain.
     expect(result.warnings.some((w) => w.source === "check")).toBe(false);
   });
+
+  it("unions @context term definitions contributed by different sheets", () => {
+    const master = sheet("root.xlsx", "", [
+      { "@id": "./", "@type": ["Dataset", "RepositoryCollection"], identifier: MASTER_ARCP },
+    ]);
+    (master.crate as { "@context": unknown })["@context"] = [
+      "https://w3id.org/ro/crate/1.2/context",
+      { custom: "arcp://name,custom/terms#", "@vocab": "http://schema.org/" },
+    ];
+    const sub = sheet("Sub/metadata.xlsx", "Sub", [
+      {
+        "@id": "./",
+        "@type": ["Dataset", "RepositoryCollection"],
+        identifier: SUB_ARCP,
+        isPartOf: { "@id": MASTER_ARCP },
+      },
+    ]);
+    (sub.crate as { "@context": unknown })["@context"] = [
+      "https://w3id.org/ro/crate/1.2/context",
+      { ldac: "https://w3id.org/ldac/terms#", "@vocab": "http://schema.org/" },
+    ];
+
+    const result = mergeCrates([master, sub]);
+
+    const context = (result.crate as { "@context": unknown[] })["@context"];
+    const terms = context.find((e) => typeof e === "object") as Record<string, unknown>;
+    expect(terms["custom"]).toBe("arcp://name,custom/terms#");
+    expect(terms["ldac"]).toBe("https://w3id.org/ldac/terms#");
+    // The shared base context string is deduped, not repeated.
+    expect(context.filter((e) => typeof e === "string")).toEqual([
+      "https://w3id.org/ro/crate/1.2/context",
+    ]);
+    expect(result.warnings.some((w) => w.source === "merge")).toBe(false);
+  });
+
+  it("keeps the master's value and warns once when a @context term conflicts", () => {
+    const master = sheet("root.xlsx", "", [
+      { "@id": "./", "@type": ["Dataset", "RepositoryCollection"], identifier: MASTER_ARCP },
+    ]);
+    (master.crate as { "@context": unknown })["@context"] = [
+      "https://w3id.org/ro/crate/1.2/context",
+      { custom: "arcp://name,custom/terms#" },
+    ];
+    const sub = sheet("Sub/metadata.xlsx", "Sub", [
+      {
+        "@id": "./",
+        "@type": ["Dataset", "RepositoryCollection"],
+        identifier: SUB_ARCP,
+        isPartOf: { "@id": MASTER_ARCP },
+      },
+    ]);
+    (sub.crate as { "@context": unknown })["@context"] = [
+      "https://w3id.org/ro/crate/1.2/context",
+      { custom: "arcp://name,other/terms#" },
+    ];
+
+    const result = mergeCrates([master, sub]);
+
+    const context = (result.crate as { "@context": unknown[] })["@context"];
+    const terms = context.find((e) => typeof e === "object") as Record<string, unknown>;
+    expect(terms["custom"]).toBe("arcp://name,custom/terms#");
+    const conflicts = result.warnings.filter(
+      (w) => w.source === "merge" && w.reference === "custom",
+    );
+    expect(conflicts).toHaveLength(1);
+  });
 });

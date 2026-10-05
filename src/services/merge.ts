@@ -264,7 +264,7 @@ export function mergeCrates(sheets: SheetCrate[]): MergeResult {
     return ai.localeCompare(bi);
   });
   const graph = [descriptor, ...rest];
-  const crate = buildCrate(sheets, graph);
+  const crate = buildCrate(sheets, master.sheet, graph, mergeWarnings);
 
   // --- Pass 9: final unresolved-reference check ----------------------------
   const checkWarnings = findUnresolvedReferences(crate);
@@ -275,14 +275,63 @@ export function mergeCrates(sheets: SheetCrate[]): MergeResult {
   };
 }
 
-// Preserve the master's @context; fall back to the RO-Crate 1.2 context.
-function buildCrate(sheets: SheetCrate[], graph: Entity[]): unknown {
-  const context =
-    sheets
-      .map((s) => (s.crate as { "@context"?: unknown })?.["@context"])
-      .find((c) => c !== undefined) ??
-    "https://w3id.org/ro/crate/1.2/context";
-  return { "@context": context, "@graph": graph };
+function buildCrate(
+  sheets: SheetCrate[],
+  master: SheetCrate,
+  graph: Entity[],
+  warnings: ConversionWarning[],
+): unknown {
+  return { "@context": mergeContexts(sheets, master, warnings), "@graph": graph };
+}
+
+type ContextEntry = string | Record<string, unknown>;
+
+function contextEntries(context: unknown): ContextEntry[] {
+  const arr = context === undefined ? [] : Array.isArray(context) ? context : [context];
+  return arr.filter(
+    (e): e is ContextEntry =>
+      typeof e === "string" || (typeof e === "object" && e !== null && !Array.isArray(e)),
+  );
+}
+
+// Unions every sheet's @context so a shared context tab need only be authored once;
+// the master's term definitions win, and a genuine term/URI clash raises one warning.
+function mergeContexts(
+  sheets: SheetCrate[],
+  master: SheetCrate,
+  warnings: ConversionWarning[],
+): unknown {
+  const ordered = [master, ...sheets.filter((s) => s !== master)];
+  const strings: string[] = [];
+  const terms: Record<string, unknown> = {};
+
+  for (const sheet of ordered) {
+    const isMaster = sheet === master;
+    const context = (sheet.crate as { "@context"?: unknown })?.["@context"];
+    for (const entry of contextEntries(context)) {
+      if (typeof entry === "string") {
+        if (!strings.includes(entry)) strings.push(entry);
+        continue;
+      }
+      for (const [term, value] of Object.entries(entry)) {
+        if (!(term in terms)) {
+          terms[term] = value;
+        } else if (!isMaster && canonical(terms[term]) !== canonical(value)) {
+          warnings.push({
+            source: "merge",
+            level: "warning",
+            message: `Conflicting @context definition for "${term}"; keeping the master's value.`,
+            reference: term,
+          });
+        }
+      }
+    }
+  }
+
+  const result: ContextEntry[] = [...strings];
+  if (Object.keys(terms).length > 0) result.push(terms);
+  if (result.length === 0) return "https://w3id.org/ro/crate/1.2/context";
+  return result.length === 1 ? result[0] : result;
 }
 
 function collectRefStrings(value: unknown, onId: (id: string) => void): void {
